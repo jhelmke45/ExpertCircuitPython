@@ -67,6 +67,6 @@ while True:
 
 https://user-images.githubusercontent.com/113116262/226618615-f54dfe6a-d990-434a-8ec4-59a0903a5488.MOV
 
-### Reflection
+### Reflection 
 
 This assignment wasn't too challenging, and I didn't run into any technical difficulties. I was able to find the basic formulas online to convert the temperature sensor's input into usable numbers, and implementing the code was farily simple. After that, it was just a matter of setting up the LCD and formatting the output properly. 
