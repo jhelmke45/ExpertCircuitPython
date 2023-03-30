@@ -3,6 +3,7 @@
 ## Table of Contents
 * [Table of Contents](#TableOfContents)
 * [Temperature Sensor](#Temperature_Sensor)
+* [Rotary Encoder](#Rotary_Encoder)
 ---
 
 ## Temperature_Sensor
@@ -70,3 +71,93 @@ https://user-images.githubusercontent.com/113116262/226618615-f54dfe6a-d990-434a
 ### Reflection 
 
 This assignment wasn't too challenging, and I didn't run into any technical difficulties. I was able to find the basic formulas online to convert the temperature sensor's input into usable numbers, and implementing the code was farily simple. After that, it was just a matter of setting up the LCD and formatting the output properly. 
+
+## Rotary_Encoder
+
+### Description
+
+In this assignment, I made used a rotary encoder to navigate a menu of 3 stoplight colors, and then turn the selected color on when the button is pressed.
+
+### Code
+
+Code is mostly the work of [Graham](https://github.com/VeganPorkChop). I made changes to fit my lcd, and so that the lcd messages would display more clearly.
+
+```python
+import time
+import rotaryio
+import board
+from lcd.lcd import LCD
+from lcd.i2c_pcf8574_interface import I2CPCF8574Interface
+from digitalio import DigitalInOut, Direction, Pull
+
+encoder = rotaryio.IncrementalEncoder(board.D3, board.D2)
+last_position = 0
+btn = DigitalInOut(board.D4)
+btn.direction = Direction.INPUT
+btn.pull = Pull.UP
+state = 0
+buttonState = 1
+
+i2c = board.I2C()
+lcd = LCD(I2CPCF8574Interface(i2c, 0x3f), num_rows=2, num_cols=16)
+
+ledGreen = DigitalInOut(board.D8)
+ledYellow = DigitalInOut(board.D9)
+ledRed = DigitalInOut(board.D10)
+ledGreen.direction = Direction.OUTPUT
+ledYellow.direction = Direction.OUTPUT
+ledRed.direction = Direction.OUTPUT
+
+while True:
+    position = encoder.position
+    if position != last_position:
+        if position > last_position:
+            state = state + 1
+        elif position < last_position:
+            state = state - 1
+        if state > 2:
+            state = 2
+        if state < 0:
+            state = 0
+        print(state)
+        if state == 0: 
+            lcd.set_cursor_pos(0, 0)
+            lcd.print("GO    ")
+        elif state == 1:
+            lcd.set_cursor_pos(0, 0)
+            lcd.print("CAUTION")
+        elif state == 2:
+            lcd.set_cursor_pos(0, 0)
+            lcd.print("STOP  ")
+    if btn.value == 0 and buttonState == 1:
+        print("button pressed")
+        if state == 0: 
+                ledGreen.value = True
+                ledRed.value = False
+                ledYellow.value = False
+        elif state == 1:
+                ledYellow.value = True
+                ledRed.value = False
+                ledGreen.value = False
+        elif state == 2:
+                ledRed.value = True
+                ledGreen.value = False
+                ledYellow.value = False
+        buttonState = 0
+    if btn.value == 1:
+        time.sleep(.1)
+        buttonState = 1
+    last_position = position
+```
+
+### Wiring
+
+![image](https://user-images.githubusercontent.com/113116262/228854138-c4c19430-198c-450c-ae25-69f6948122d1.png)
+
+### Evidence
+
+https://user-images.githubusercontent.com/113116262/228851176-d9a681d8-9212-4a2f-a24c-285130da5fbe.MOV
+
+### Reflection
+
+This assignment was a good refresher on leds and buttons with CircuitPython, as well as a good introduction to a new part. The code got a bit jumbled once the button past of the encoder was introduced, but it wasn't too hard to get all of the parts working.
