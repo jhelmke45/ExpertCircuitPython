@@ -4,6 +4,7 @@
 * [Table of Contents](#TableOfContents)
 * [Temperature Sensor](#Temperature_Sensor)
 * [Rotary Encoder](#Rotary_Encoder)
+* [Photointerrupter](#Photointerrupter)
 ---
 
 ## Temperature_Sensor
@@ -161,3 +162,47 @@ https://user-images.githubusercontent.com/113116262/228851176-d9a681d8-9212-4a2f
 ### Reflection
 
 This assignment was a good refresher on leds and buttons with CircuitPython, as well as a good introduction to a new part. The code got a bit jumbled once the button past of the encoder was introduced, but it wasn't too hard to get all of the parts working.
+
+## Photointerrupter
+
+### Description
+
+In this assignment, I got a photointerrupter to detect how many times it had been interrupted, and then print that value every 4 seconds.
+
+### Code
+
+```python
+import time
+import digitalio
+import board
+
+photoI = digitalio.DigitalInOut(board.D7)
+photoI.direction = digitalio.Direction.INPUT
+photoI.pull = digitalio.Pull.UP
+
+last_photoI = True
+last_update = -4
+
+photoICrosses = -1
+
+while True:
+    if time.monotonic()-last_update > 4:
+        print(f"The number of interupts is {photoICrosses}")
+        last_update = time.monotonic()
+    
+    if last_photoI != photoI.value and not photoI.value:
+        photoICrosses += 1
+    last_photoI = photoI.value
+```  
+
+### Wiring
+
+![image](https://user-images.githubusercontent.com/113116262/234881775-1120bb4d-1e4a-444e-be79-82fb69f15771.png)
+
+### Evidence
+
+https://user-images.githubusercontent.com/113116262/234882162-ec1e898e-e020-4ec2-aaba-c0cdecca96c9.MOV
+
+### Reflection
+
+This assignment was pretty basic, and there wasn't really wiring. The code was a bit more interesting, though, and even though it wasn't very long it had some interesting logic to detect full interrupts. 
